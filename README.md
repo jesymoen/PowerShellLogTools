@@ -7,20 +7,28 @@ The PowerShell LogTools Module is designed to add text-based logging features to
 The idea is that your script should have logging capabilities when the module is available, but not require code changes or produce errors if it is not available. And, you shouldn't have to make major modifications to add logging to a script that already has verbose, warning, debug, and error messages implemented throughout.  
 
 ## How Does it Work?
-The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, tje core of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options.  
+The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, tje core of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options. Each of these functions is designed to align with a default PowerShell cmdlet, as follows: 
+
+LogTools Function|Aligns with PowerShell Function
+|:---|:---|
+Write-LogMessage (with no parameters)|Write-Verbose
+Write-LogWarning|Write-Warning
+Write-LogError|Write-Error  
+Write-LogDebug|Write-Debug
+
 
 ## Included Functions
-Clear-LogFileHistory<br>
-Disable-LogFileHooking<br>
-Enable-LogFileHooking<br>
-Initialize-LogFile<br>
-New-LogDirectory<br>
-New-LogFileLock<br>
-New-LogFileName<br>
-Remove-LogFileLock<br>
-Write-LogDebug<br>
-Write-LogError<br>
-Write-LogMessage<br>
-Write-LogWarning<br>
+* New-LogDirectory
+* New-LogFileName
+* Write-LogMessage
+* Write-LogWarning
+* Write-LogError
+* Write-LogDebug
+* New-LogFileLock<br>
+* Remove-LogFileLock<br>
+* Enable-LogFileHooking<br>
+* Initialize-LogFile<br>
+* Disable-LogFileHooking<br>
+* Clear-LogFileHistory<br>
 
 
