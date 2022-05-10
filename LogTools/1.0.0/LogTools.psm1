@@ -4,14 +4,12 @@ This script module provides various functions for performing logging operations 
 PowerShell scripts.  
 
 .DESCRIPTION
-
-
 This script module provides various functions for performing logging operations in 
 PowerShell scripts. 
 
 Author: Jeff Symoens (jeff.symoens@microsoft.com), Microsoft Consulting Services
-Created: 08/24/2014
-Last Modified: 12/14/2016
+Created: 05/04/2022
+Last Modified: 05/04/2022
 
 Disclaimer: This script is provided "as-is". No support or warranty from Microsoft 
 is expressed or implied.
@@ -61,7 +59,7 @@ function New-LogDirectory ()
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
 
     #>
@@ -148,6 +146,7 @@ function New-LogFileName
     
     csv
     txt
+    log
     test
     123
 
@@ -217,7 +216,7 @@ function New-LogFileName
     .NOTES
     Version 1.0.0
     Author: Jeff Symoens
-    Date: 1/24/2022
+    Date: 05/04/2022
     Note: Initial release of function.
     #>
 
@@ -402,7 +401,7 @@ function Write-LogMessage
     .NOTES
     Version 1.0.0
     Author: Jeff Symoens
-    Date: 1/24/2022
+    Date: 05/04/2022
     Note: Initial release of function.
     #>
 
@@ -529,7 +528,7 @@ function Write-LogWarning {
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
     #>
 
@@ -581,7 +580,7 @@ function Write-LogDebug {
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
     #>
 
@@ -705,15 +704,15 @@ function Write-LogError {
 
 
     .INPUTS
-       System.String
-       System.Object.ErrorRecord
+        System.String
+        System.Object.ErrorRecord
     .OUTPUTS
         System.Object.ErrorRecord
         
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
     #>
 
@@ -776,7 +775,7 @@ function Enable-LogFileHooking
     .SYNOPSIS
         The Enable-LogFileHooking function runs a series of configuration tasks that "hook" logging into your script or PowerShell session. Once run, this function enables all Write-Verbose, Write-Warning, Write-Error, and Write-Debug messages to be logged to the designate logfile.   
     .DESCRIPTION
-        The Enable-LogFileHooking function runs a series of configuration tasks that "hook" logging into your script or PowerShell session. Once run, this function enables all Write-Verbose, Write-Warning, Write-Error, and Write-Debug messages to be logged to the designate logfile.   
+        The Enable-LogFileHooking function runs a series of configuration tasks that "hook" logging into your script or PowerShell session. Once run, this function enables all Write-Verbose, Write-Warning, Write-Error, and Write-Debug messages to be logged to the designated logfile.   
 
         The Enable-LogFileHooking function creates a several global variables in the PowerShell session which are used to facilite logging. In addition, the function also creates alias that redirect some common PowerShell cmdlets to functions in the LogTools module, as follows:
             Alias: Write-Verbose --> Redirects to function: Write-LogMessage
@@ -784,17 +783,14 @@ function Enable-LogFileHooking
             Alias: Write-Debug --> Redirects to function: Write-LogDebug
             Alias: Write-Error --> Redirects to function: Write-LogError
         
-        The creation of these alias allows you simply use these common PowerShell cmdlets when writing your script. When LogFileHooking is not enabled, these cmdlets simply run as normal, providing the desired screen output notifications that they were designed for. 
+        The creation of these alias allows you to simply use these common PowerShell cmdlets when writing your script. When LogFileHooking is not enabled, these cmdlets simply run as normal, providing the desired screen output notifications that they were designed for. 
         
-        When LogFileHooking is enabled, then these aliases will call the corresponding helper functions in this module and enable logging of this messages. Also, when LogFileHooking status messages from the above cmdlets will only be displayed on screen of the -Verbose switch (or -Debug in the case of Write-Debug) is enabled when calling the Enable-LogFileHooking function.  
+        When LogFileHooking is enabled, then these aliases will call the corresponding helper functions in this module and enable logging of this messages. 
 
-        ### Add notes about Verbose and Debug
+        When LogFileHooking is enable, the display of Verbose and Debug messages to the screen is governed by either the common parameter switches (the "-Verbose" and "-Debug" switches respectively) when running a script, cmdlet or function, or the respective environmental variables ("$VerbosePreference" and "$DebugPreference"). This is the same is if LogFileHooking was not enabled. Therefore, to manage whether Write-Verbose and Write-Debug messages are displayed on-screen simply use the command-line parameters or environment variables as normal.    
 
         To remove the varables and aliases created by this function, run the Disable-LogFileHooking function. 
     
-    .PARAMETER 
-
-
     .PARAMETER LogFile
         Specifies the path\filename for the logfile that logging will be established to. This value will be used to create a global variable called $Global:LogFileGlobal, which is used by the Write-LogMessage function to determine the destination to writing log messages to. Creating this global variable elliminates the need to specify a value for the LogFile parameter each time the Write-LogMessage function is called. Typically, the New-LogFileName function is used to create a logfile name. However, a sting with path\filename is sufficient. 
 
@@ -806,11 +802,18 @@ function Enable-LogFileHooking
 
          Using the the ThrowExceptionOnWriteError option and calling the Write-LogError function, as opposed to using the throw keyword, allows you to log terminating errors before exiting the script. For more on this option, see also 'Get-Help Write-LogError -Full'.
 
+    .PARAMETER SupressConsoleOutput
+         The SupressConsoleOutput switch parameter indicates whether or not to supress all console output from the Write-Verbose, Write-Warning, and Write-Error cmdlets when they are called. This can helpful when running automation scripts in, for example, a programatic runspace. In this case, any output that would be rendered to the console from one of the previously mentioned functions would only be logged, and while output to the screen is supressed. This effectively limits screen output to items returned from the script and output from exceptions.
+
+         The SupressConsoleOutput switch only supresses output for three of the four cmdlets that are redirected for logging. These are Write-Verbose, Write-Warning, and Write-Error. Output from other cmdlets, such as Write-Host for example, will still generate console output, since they are not redirected for logging they are considered interactive to the script. If output supression using this switch is desired, use one of the four cmdlets that are redirected for logging.
+         
+         When operating with the SupressConsoleOutput switch, output from and interaction with the Write-Debug cmdlet is not supressed. This is because when running with the debug mode, there is a general expection of console output and interaction interaction.  
+
     .EXAMPLE
         PS C:\> $Logfile = New-LogfileName -LogBaseName TestLog -LogDir .\ 
         Enable-LogFileHooking -Logfile $LogFile
         
-        This example creates a logfile '.\TestLog_2022-02-09_(JESYMOEN-SLT).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
+        This example creates a logfile '.\TestLog_2022-02-09_(HOSTNAME).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
         
             Include RunspaceID in logged messages: True
 
@@ -837,7 +840,7 @@ function Enable-LogFileHooking
         PS C:\> $Logfile = New-LogfileName -LogBaseName TestLog -LogDir .\ 
         Enable-LogFileHooking -Logfile $LogFile -Verbose -IncludeRunspaceID -ThrowExceptionOnWriteError
         
-        This example creates a logfile '.\TestLog_2022-02-09_(JESYMOEN-SLT).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
+        This example creates a logfile '.\TestLog_2022-02-09_(HOSTNAME).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
         
             Include RunspaceID in logged messages: True
 
@@ -862,7 +865,7 @@ function Enable-LogFileHooking
         PS C:\> $Logfile = New-LogfileName -LogBaseName TestLog -LogDir .\ 
         Enable-LogFileHooking -Logfile $LogFile -Verbose -Debug -IncludeRunspaceID -ThrowExceptionOnWriteError
         
-        This example creates a logfile '.\TestLog_2022-02-09_(JESYMOEN-SLT).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
+        This example creates a logfile '.\TestLog_2022-02-09_(HOSTNAME).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
         
             Include RunspaceID in logged messages: True
 
@@ -883,6 +886,32 @@ function Enable-LogFileHooking
                 Write ouput to Screen: True - when using the -Message parameter and not using the -ErrorRecord parameter
                 Throw Exception on error: True - when using the -ErrorRecord parameter, with or without the -Message parameter
 
+    .EXAMPLE
+        PS C:\> $Logfile = New-LogfileName -LogBaseName TestLog -LogDir .\ 
+        Enable-LogFileHooking -Logfile $LogFile -Verbose -Debug -IncludeRunspaceID -SupressConsoleOutput
+        
+        This example creates a logfile '.\TestLog_2022-02-09_(HOSTNAME).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
+        
+            Include RunspaceID in logged messages: True
+
+            Write-Verbose:
+                Logged to file: True
+                Write ouput to Screen: True  
+
+            Write-Warning:
+                Logged to file: True
+                Write ouput to Screen: True
+
+            Write-Debug:
+                Logged to file: True
+                Write ouput to Screen: True
+
+            Write-Error:
+                Logged to file: True
+                Write ouput to Screen: True - when using the -Message parameter and not using the -ErrorRecord parameter
+                Throw Exception on error: True - when using the -ErrorRecord parameter, with or without the -Message parameter
+
+
     
     .INPUTS
         System.String
@@ -892,7 +921,7 @@ function Enable-LogFileHooking
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
 
     #>
@@ -903,9 +932,6 @@ function Enable-LogFileHooking
         [Parameter(Mandatory = $false,Position=1)][switch]$IncludeRunspaceID,
         [Parameter(Mandatory = $false,Position=2)][switch]$ThrowExceptionOnWriteError,
         [Parameter(Mandatory = $false,Position=2)][switch]$SupressConsoleOutput
-        
-
-
     )
 
     # Set LogFile variable
@@ -914,40 +940,33 @@ function Enable-LogFileHooking
         $Global:LogfileGlobal = $Logfile
     }
 
+    # Set SupressConsoleOutputGlobal variable
+    if ($SupressConsoleOutput)
+    {
+        $Global:SupressConsoleOutputGlobal = $true
+    }
+
     # Set IncludeRunspaceIDGlobal variable
     if ($IncludeRunspaceID)
     {
-        Write-Verbose "The IncludeRunspaceID option is selected. Logged entries will include the PowerShell Runspace ID."
+        if (!$SupressConsoleOutputGlobal)
+        {
+            Write-Verbose "The IncludeRunspaceID option is selected. Logged entries will include the PowerShell Runspace ID."
+        }
         $Global:IncludeRunspaceIDGlobal = $true
     }
 
     # Set ThrowExceptionOnWriteErrorGlobal variable
     if ($ThrowExceptionOnWriteError)
     {
-        Write-Verbose "The ThrowExceptionOnWriteError option is selected. When Write-LogError is call with an ErrorRecord, then an exception will be thrown after logging the error."
-
+        if (!$SupressConsoleOutputGlobal)
+        {
+            Write-Verbose "The ThrowExceptionOnWriteError option is selected. When Write-LogError is call with an ErrorRecord, then an exception will be thrown after logging the error."
+        }
+        
         $Global:ThrowExceptionOnWriteErrorGlobal = $true
     }
 
-    # Set ThrowExceptionOnWriteErrorGlobal variable
-    if ($SupressConsoleOutput)
-    {
-        Write-Verbose "The ThrowExceptionOnWriteError option is selected. When Write-LogError is call with an ErrorRecord, then an exception will be thrown after logging the error."
-
-        $Global:SupressConsoleOutputGlobal = $true
-    }
-
-    # Set VerboseModeGlobal variable
-    if ($PSBoundParameters['Verbose'])  
-    {
-        Write-Verbose "Verbose mode selected. Enabling verbose output to screen."
-        $Global:VerboseModeGlobal = $true 
-    }
-
-    else 
-    {
-        $Global:VerboseModeGlobal = $false
-    }
 
     # Create write-verbose alias to hook logfile output
     if (!(test-path Alias:\Write-Verbose))
@@ -987,6 +1006,7 @@ function Disable-LogFileHooking
             $Global:LogfileGlobal --> Establishes the target logfile for logging. 
             $Global:IncludeRunspaceIDGlobal --> Establishes whether the RunspaceID will be included in each logged message entry.
             $Global:ThrowExceptionOnWriteErrorGlobal --> Enables exception throwing after logging Write-Error messages using the ErrorRecord Parameter 
+            SupressConsoleOutputGlobal --> 
             $Global:VerboseModeGlobal --> Enables output to console of logged messages 
 
         In addition, the function also removes alias that redirect some common PowerShell cmdlets to functions in the LogTools module, as follows:
@@ -999,49 +1019,29 @@ function Disable-LogFileHooking
         
         When LogFileHooking is enabled, then these aliases will call the corresponding helper functions in this module and enable logging of this messages. Also, when LogFileHooking status messages from the above cmdlets will only be displayed on screen of the -Verbose switch (or -Debug in the case of Write-Debug) is enabled when calling the Enable-LogFileHooking function.  
 
-        ### Add notes about Verbose and Debug
-
-        To remove the varables and aliases created by this function, run the Disable-LogFileHooking function. 
+        For more information about enabling logfile hooking, see Get-Help Enable-LogFileHooking. 
     
-    .PARAMETER 
-
-
-    .PARAMETER LogFile
-        Specifies the path\filename for the logfile that logging will be established to. This value will be used to create a global variable called $Global:LogFileGlobal, which is used by the Write-LogMessage function to determine the destination to writing log messages to. Creating this global variable elliminates the need to specify a value for the LogFile parameter each time the Write-LogMessage function is called. Typically, the New-LogFileName function is used to create a logfile name. However, a sting with path\filename is sufficient. 
-
-    .PARAMETER IncludeRunspaceID
-         The IncludeRunspaceID switch parameter that indicates whether or not to include the PowerShell RunspaceID in each message that is logged to the logfile. This value will be used to create a global variable called $Global:IncludeRunspaceIDGlobal, which is used by the Write-LogMessage function to determine whether to include the RunspaceID when write log messages. When this parameter is selected the global IncludeRunspaceIDGlobal variable is set to True. If $IncludeRunspaceIDGlobal evaluates to True, then the RunspaceID is included. Otherwise it is not, unless the IncludeRunspaceID switch parameter is used when calling the Write-LogMessage function. 
-    
-    .PARAMETER ThrowExceptionOnWriteError
-         The ThrowExceptionOnWriteError switch parameter that indicates whether or not to throw an exception after writing a message to the logfile when calling the Write-LogError function (which the alias for Write-Error is redirected to when running the Enable-LogFile Hooking function). This value will be used to create a global variable called $Global:ThrowExceptionOnWriteErrorGlobal, which is used by the Write-LogMessage and Write-LogError functions to determine whether to throw an exception or write the error to the console screen when the verbose parameter is selected. When this parameter is selected the global ThrowExceptionOnWriteErrorGlobal variable is set to True. If $ThrowExceptionOnWriteErrorGlobal evaluates to True and the ErrorRecord parameter is used when calling Write-LogError, then an exception is thrown after logging the error. Otherwise no exception is thrown, and the Write-Error cmdlet is used to write the error to the console screen when the verbose parameter is selected. 
-
-         Using the the ThrowExceptionOnWriteError option and calling the Write-LogError function, as opposed to using the throw keyword, allows you to log terminating errors before exiting the script. For more on this option, see also 'Get-Help Write-LogError -Full'.
-
     .EXAMPLE
-        PS C:\> $Logfile = New-LogfileName -LogBaseName TestLog -LogDir .\ 
-        Enable-LogFileHooking -Logfile $LogFile
-        
-        This example creates a logfile '.\TestLog_2022-02-09_(JESYMOEN-SLT).log' and the enables logging of messages to that logfile. In this example, the following configuration is produced:  
-    
+        PS C:\> Disable-LogFileHooking 
+
+        This example removes logfile hooking by removing the aliases and variables that have been created using the Enable-LogFileHooking function. 
+
     .INPUTS
-        System.String
-        System.Management.Automation.SwitchParameter
+        None
     .OUTPUTS
         None
+
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
 
     #>
     
     [cmdletbinding()]
     param()
-
-    # Removes the $ScriptName and $ScriptPath variables if they exist
-    Remove-LogOutputVariables
-    
+   
     # Remove write-verbose alias 
     if (Test-Path Alias:\Write-Verbose)
     {
@@ -1072,7 +1072,7 @@ function Disable-LogFileHooking
         Remove-Variable VerboseModeGlobal -Scope Global
     }
 
-    # Remove Logfile Variable
+    # Remove LogfileGlobal Variable
     if (Get-Variable LogfileGlobal -Scope Global -ErrorAction SilentlyContinue)
     {
         Remove-Variable LogfileGlobal -Scope Global
@@ -1098,80 +1098,132 @@ function Disable-LogFileHooking
 }
 
 
-function Initialize-LogOutput
+function Initialize-LogFile
 {
-    <#Need Help Section#>
+    <#
+    .SYNOPSIS
+        Initializes the logfile by writing a banner in the logfile. This function is optional, but can provide a nice way to differentiate between different runs of a script when appending to the same log file. 
+
+    .DESCRIPTION
+        Initializes the logfile by writing a banner in the logfile. This function is optional, but can provide a nice way to differentiate between different runs of a script when appending to the same log file. 
+        
+        This function accepts either an InvocationInfo (Invocation parameter) object or a string message (Message parameter) to determine the header information that is included in the log file.  
+ 
+
+    .PARAMETER Invocation
+        The Invocation parameter allows from providing an InvocationInfo object (for example, Get-Variable -Name MyInvocation | Initialize-LogFile), which the function will parse to get the name and/or path of the script to include in the log header. 
+    
+    .PARAMETER IncludeScriptPath
+        When using Invocation parameter, the IncludeScriptPath switch indicates whether to include the full path to the script (rather than just the script name) when in the log header when initializing the log file.  
+
+    .PARAMETER Message 
+        Specifies the message to use as the header message. 
+
+    .EXAMPLE
+        PS C:\> Initialize-LogFile -Message "This is a test." -Logfile C:\Scripts\Logs\Logfile1.txt
+
+        Writes the following header into the logfile 'C:\Scripts\Logs\Logfile1.txt':
+        
+            2022-03-02T22:17:34.6672625-05:00 [INFORMATION]: ======================================================================================
+            2022-03-02T22:17:34.6752640-05:00 [INFORMATION]:    This is a test.
+            2022-03-02T22:17:34.6852956-05:00 [INFORMATION]: ======================================================================================
+    
+    .EXAMPLE
+        Script excerpt example from a sample script 'C:\Scripts\Test-LogToolsSampleScript.ps1': 
+            $LogDir = New-LogDirectory -Name C:\Scripts\Logs
+            $LogFile = New-LogfileName -LogBaseName Logfile -LogDir $LogDir 
+            Enable-LogFileHooking -Logfile $LogFile -ThrowExceptionOnWriteError -SupressConsoleOutput
+            Get-Variable -Name MyInvocation | Initialize-LogFile -IncludeScriptPath
+        
+
+        - Checks for a log directory named "C:\Scripts\Logs" and creates it if it does not exist.
+        - Creates a new logfile named 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log'
+        - Creates aliases and variables to enable logfile hooking (see, Get-Help Enable-LogFileHooking -Full)
+        - Gets and pipes the $MyInvocation variable to the Initialize-LogFile functions, which writes the following header into the logfile 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log':
+        
+            2022-03-02T22:17:34.6672625-05:00 [INFORMATION]: ======================================================================================
+            2022-03-02T22:17:34.6752640-05:00 [INFORMATION]:    Running Script C:\Scripts\Test-LogToolsSampleScript.ps1...
+            2022-03-02T22:17:34.6852956-05:00 [INFORMATION]: ======================================================================================
+    
+        Note: If the 'IncludeScriptPath' switch is not used, then the header message would read 'Running Script Test-LogToolsSampleScript.ps1...' instead 'Running Script C:\Scripts\Test-LogToolsSampleScript.ps1...'.
+
+    .INPUTS
+    System.String
+    System.Management.Automation.InvocationInfo
+    System.Management.Automation.SwitchParameter
+
+    .OUTPUTS
+    None
+
+    .NOTES
+        Version 1.0.0
+        Author: Jeff Symoens
+        Date: 05/04/2022
+        Note: Initial release of function.
+
+    #>
 
     [CmdletBinding()]
 
-    param
-    ([Parameter(Mandatory = $true, Position = 0,ValueFromPipeline = $true)][ValidateNotNullOrEmpty()][object]$Invocation
+    param (
+        [Parameter(ParameterSetName="Invocation",Mandatory = $true, Position = 0,ValueFromPipeline = $true)][ValidateNotNullOrEmpty()][object]$Invocation,
+        [Parameter(ParameterSetName="Message",Mandatory = $true, Position = 1,ValueFromPipeline = $false)][string]$Message,
+        [Parameter(ParameterSetName="Invocation",Mandatory = $false, Position = 2,ValueFromPipeline = $false)][switch]$IncludeScriptPath,
+        [Parameter(Mandatory = $false,Position = 3)][string]$Logfile=$LogfileGlobal
     )
 
     try 
     {
-        if ($Invocation.Value.GetType() -ne "InvocationInfo")
+        if (!$Logfile) 
         {
-            # Getting ScriptPath directory and setting ScriptPath variable...
-            $Global:ScriptPath = (Split-Path -Path ($Invocation.Value).MyCommand.Path)
-            # Getting Script name and setting ScriptName variable...
-            $Global:ScriptName = ($Invocation.Value).MyCommand.Name
+            Microsoft.PowerShell.Utility\Write-Verbose "No value supplied for parameter Logfile. Activity will not be logged."
+        }
 
-                # Initialize logfile
-            Write-Verbose '======================================================================================'
+        else 
+        {
+
+            switch ($pscmdlet.ParameterSetName)
+            {
+                "Invocation"
+                {
+                    if ($Invocation.Value.GetType().Name -eq "InvocationInfo")
+                    {
+
+                        # Getting Script name and setting ScriptName variable...
+                        if ($IncludeScriptPath)
+                        {
+                            $HeaderMessage = "Running Script $(($Invocation.Value).MyCommand.Path)..."
+                        }
+
+                        else
+                        {
+                            $HeaderMessage = "Running Script $(($Invocation.Value).MyCommand.Name)..."
+                        }
+                    }
+                }
+
+                "Message"
+                {
+                    $HeaderMessage = $Message
+                }
+
+            }
+
+            # Initialize logfile
+            Write-LogMessage '======================================================================================' -Logfile $Logfile
             
-            if ($ScriptName)
-            {
-                Write-Verbose "   Running Script ${ScriptName}..."
-            }
-            Else
-            {
-                Write-Verbose "   Running Script..."    
-            }
+            Write-LogMessage "   ${HeaderMessage}" -Logfile $Logfile
 
-            Write-Verbose '======================================================================================'
-    
+            Write-LogMessage '======================================================================================' -Logfile $Logfile
         }
     }
 
-    Catch { Remove-LogOutputVariables }
+    Catch { }
 
     Finally { }
 
 }
 
-
-function Remove-LogOutputVariables()
-{
-    <#Need Help Section#>
-
-    [CmdletBinding()]
-
-    param
-    ()
-
-    try 
-    {
-        [string]$VerboseFnPrefix ="Function ($(($MyInvocation).MyCommand.Name)):"
-        
-        if ($Global:ScriptPath)
-        {
-            Write-Verbose "$VerboseFnPrefix Remove global 'ScriptPath' variable..."
-            Remove-Variable ScriptPath -Scope Global
-        }
-
-        if ($Global:ScriptName)
-        {
-            Write-Verbose "$VerboseFnPrefix Remove global 'ScriptName' variable..."        
-            Remove-Variable ScriptName -Scope Global
-        }
-    }
-
-    Catch {}
-
-    Finally {}
-
-}
 
 function Clear-LogFileHistory
 {
@@ -1191,7 +1243,7 @@ function Clear-LogFileHistory
     Indicates the path of the file or directory to be checked for pruning. 
 
     .PARAMETER RetentionDays
-    Provides the number of days to be used as the retention time. For example, if the RetentionDays is set to 14, files older than 14 days will be pruned from the target directory.
+    Provides the number of days to be used as the retention time. For example, if the RetentionDays is set to 14, files older than 14 days will be pruned from the target directory. If a value of 0 is provided, that all files will be deleted from the target path.
      
 
     .EXAMPLE
@@ -1205,6 +1257,12 @@ function Clear-LogFileHistory
         This example deletes the file C:\Test\test.txt if it is older than 7 days. 
 
     .EXAMPLE
+        Clear-LogFileHistory -Path "C:\Test\*.log" -RetentionDays 7 
+
+        This example deletes files that match the wild-card pattern '*.log' in the 'C:\Test' directory if the file(s) is older than 7 days. 
+    
+    
+        .EXAMPLE
         dir C:\Test | Clear-LogFileHistory -RetentionDays 7
 
         This example gets the contents of the directory C:\Test and passes that list of files and immediate child directories to the Clear-LogFileHistory command, which deletes the contents of each argument if it is older than 7 days. 
@@ -1225,7 +1283,7 @@ function Clear-LogFileHistory
     .NOTES
         Version 1.0.0
         Author: Jeff Symoens
-        Date: 1/24/2022
+        Date: 05/04/2022
         Note: Initial release of function.
     #>
 
@@ -1289,12 +1347,55 @@ function Clear-LogFileHistory
 
     END {}
 
-} # function Clear-LogFileHistory
+}
 
 
-function New-LogFileLock()
+function New-LogFileLock
 {
-    <#Need Help Section#>
+    <#
+    .SYNOPSIS
+        Creates a new read-write file lock on the file provided as the input argument.
+
+    .DESCRIPTION
+        Creates a new read-write file lock on the file provided as the input argument.
+
+        When creating a file lock, it is best to store the returned file system object as a variable so that the variable can be used to remove the file lock when finished. Otherwise, there will be no object to operate on to close the file lock.    
+    
+    .PARAMETER FileName
+        Indicates the name of the file that the file lock will be created for. This parameter is mandatory.
+    
+    .EXAMPLE
+        PS C:\> $LogFileLock = New-LogFileLock -FileName C:\Scripts\Logs\Logfile1.txt
+
+        Creates a new read-write file lock on the file 'C:\Scripts\Logs\Logfile1.txt'.  
+    
+
+    .EXAMPLE
+        PS C:\> $LogDir = New-LogDirectory -Name C:\Scripts\Logs
+        PS C:\> $LogFile = New-LogfileName -LogBaseName Logfile -LogDir $LogDir 
+        PS C:\> $LogFileLock = New-LogFileLock -FileName $LogFile
+        PS C:\> "This is a test." | Add-Content -Path $Logfile -Encoding Ascii
+        PS C:\> Remove-LogFileLock -FileSystemObject $LogFileLock
+
+        Checks for a log directory named "C:\Scripts\Logs" and creates it if it does not exist.
+        Creates a new logfile named 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log'
+        Creates a new read-write file lock on the file 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log'.
+        Writes the line 'This is a test.' to the logfile 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log'.
+        Removes the file lock from the file 'C:\Scripts\Logs\Logfile_2022-02-24_(HOSTNAME).log' 
+    
+    .INPUTS
+        System.String
+
+    .OUTPUTS
+        System.IO.Stream[]
+
+    .NOTES
+        Version 1.0.0
+        Author: Jeff Symoens
+        Date: 05/04/2022
+        Note: Initial release of function.
+
+    #>
 
     [cmdletbinding()]
     Param(
@@ -1314,10 +1415,8 @@ function New-LogFileLock()
 
             }
 
-                #$(dir $fileName).VersionInfo.FileName
-                $fsObj=[System.io.File]::Open($fileName, 'Append', 'Write','ReadWrite') 
-                #$returnObj.Add($fsObj)
-                return $fsObj
+                $FileSystemObject=[System.io.File]::Open($fileName, 'Append', 'Write','ReadWrite') 
+                return $FileSystemObject
         }
 
         Catch { throw $_}
@@ -1327,13 +1426,47 @@ function New-LogFileLock()
 }
 
 
-function Remove-LogFileLock()
+function Remove-LogFileLock
 {
-    <#Need Help Section#>
+    <#
+    .SYNOPSIS
+        Removes a file lock from a file system object provided as the input argument.
+
+    .DESCRIPTION
+        Removes a file lock from a file system object provided as the input argument.
+    
+    .PARAMETER FileSystemObject
+        Indicates the file system object that will have the file lock removed. This parameter is mandatory. The object type for this parameter must be System.IO.Stream. 
+    
+    .EXAMPLE
+        PS C:\> Remove-LogFileLock $LogFileLock
+
+        or 
+
+        PS C:\> Remove-LogFileLock -FileSystemObject $LogFileLock
+
+        or 
+
+        $LogFileLock | Remove-LogFileLock
+        
+        Removes the file lock from the file system object stored in the variable $LogFileLock.  
+    
+    
+    .INPUTS
+        System.IO.Stream[]
+    .OUTPUTS
+        
+    .NOTES
+        Version 1.0.0
+        Author: Jeff Symoens
+        Date: 05/04/2022
+        Note: Initial release of function.
+
+    #>
 
     [cmdletbinding()]
     Param(
-        [Parameter(Mandatory = $true,Position=0,ValueFromPipeline = $true)][System.IO.Stream[]]$fsObj
+        [Parameter(Mandatory = $true,Position=0,ValueFromPipeline = $true)][System.IO.Stream[]]$FileSystemObject
         )
 
     BEGIN {}
@@ -1342,11 +1475,11 @@ function Remove-LogFileLock()
     {
         try {
 
-            $fsObj.close()
-            $fsObj.dispose()
+            $FileSystemObject.close()
+            $FileSystemObject.dispose()
         }
           
-        Catch { throw $_ }
+        Catch { throw }
 
     }
 

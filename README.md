@@ -51,9 +51,9 @@ Test-LogToolsSampleScriptAdvanced.ps1 | Provides a more advanced example of crea
 * Write-LogWarning
 * Write-LogError
 * Write-LogDebug
-* New-LogFileLock<br>
-* Remove-LogFileLock<br>
-* Enable-LogFileHooking<br>
-* Initialize-LogFile<br>
-* Disable-LogFileHooking<br>
-* Clear-LogFileHistory<br>
+* New-LogFileLock
+* Remove-LogFileLock
+* Enable-LogFileHooking
+* Initialize-LogFile
+* Disable-LogFileHooking
+* Clear-LogFileHistory
