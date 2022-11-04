@@ -45,7 +45,7 @@ There are two sample scripts in the module directory that provide examples of ho
 Sample Script Name| Description
 |:------------------------------------|:------------------|
 Test-LogToolsSampleScriptSimple.ps1 | Provides a basic example of creating a log file and enabling log file hooking and writing a header into the logfile. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling.  
-Test-LogToolsSampleScriptAdvanced.ps1 | Provides a more advanced example of creating a log file by capturing the script name, creating and removove a file lock on the log file, and enabling log file hooking with advanced options. This script also writes a header into the logfile, using the MyInvocation variable to parse the script name to include in the header. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling. Also includes an example of Clear-LogFileHistory function, which can be used to delete old log files.
+Test-LogToolsSampleScriptAdvanced.ps1 | Provides a more advanced example of creating a log file by capturing the script name, creating and removing a file lock on the log file, and enabling log file hooking with advanced options. This script also writes a header into the logfile, using the MyInvocation variable to parse the script name to include in the header. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling. Also includes an example of Clear-LogFileHistory function, which can be used to delete old log files.
 
 
 ## Included Functions
