@@ -11,7 +11,7 @@ The PowerShell LogTools module is published on [PowerShell Gallery](https://www.
 >Install-Module -Name LogTools
 
 ## How Does it Work?
-The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, tje core of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options. Each of these functions is designed to align with a default PowerShell cmdlet, as follows: 
+The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, the core functionality of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options. Each of these functions is designed to align with a default PowerShell cmdlet, as follows: 
 
 LogTools Function|Aligns with PowerShell Function
 |:---|:---|
