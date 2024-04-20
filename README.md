@@ -11,7 +11,7 @@ The PowerShell LogTools module is published on [PowerShell Gallery](https://www.
 >Install-Module -Name LogTools
 
 ## How Does it Work?
-The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, tje core of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options. Each of these functions is designed to align with a default PowerShell cmdlet, as follows: 
+The LogTools module includes a number of functions that assist with logfile operations, from creating a directory for your logs, to generating logfile names that include the date and hostname, to adding and removing a file lock, to cleaning up old log files. However, the core functionality of the module is actually writing messages to log files. For that there are several key functions, the most central of which is the Write-LogMessage function. This function actually writes the log messages, but there are also some helper functions that simply call the Write-LogMessage function with different options. Each of these functions is designed to align with a default PowerShell cmdlet, as follows: 
 
 LogTools Function|Aligns with PowerShell Function
 |:---|:---|
@@ -45,7 +45,7 @@ There are two sample scripts in the module directory that provide examples of ho
 Sample Script Name| Description
 |:------------------------------------|:------------------|
 Test-LogToolsSampleScriptSimple.ps1 | Provides a basic example of creating a log file and enabling log file hooking and writing a header into the logfile. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling.  
-Test-LogToolsSampleScriptAdvanced.ps1 | Provides a more advanced example of creating a log file by capturing the script name, creating and removove a file lock on the log file, and enabling log file hooking with advanced options. This script also writes a header into the logfile, using the MyInvocation variable to parse the script name to include in the header. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling. Also includes an example of Clear-LogFileHistory function, which can be used to delete old log files.
+Test-LogToolsSampleScriptAdvanced.ps1 | Provides a more advanced example of creating a log file by capturing the script name, creating and removing a file lock on the log file, and enabling log file hooking with advanced options. This script also writes a header into the logfile, using the MyInvocation variable to parse the script name to include in the header. Includes examples of Write-Verbose, Write-Warning, Write-Debug, and Write-Error, as well as exception handling. Also includes an example of Clear-LogFileHistory function, which can be used to delete old log files.
 
 
 ## Included Functions
